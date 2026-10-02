@@ -40,8 +40,8 @@ if (!empty($jobTitles)) {
     foreach ($jobTitles as $index => $title) {
         $start = ($index === 0) ? 0 : (int)round($index * $step) + 1;
         $end = ($index === $total - 1) ? 100 : (int)round(($index + 1) * $step);
-        $escapedTitle = str_replace(["\\", "'"], ["\\\\", "\\'"], $title);
-        $keyframesWords .= "{$start}%, {$end}% { content: ' " . $escapedTitle . "'; }\n";
+        $escapedTitle = str_replace(["\\", "'"], ["\\\\", "\\'"], trim($title));
+        $keyframesWords .= "{$start}%, {$end}% { content: '" . $escapedTitle . "'; }\n";
 
         $sliceStart = $index * $step;
         $coverSteps[] = (int)round($sliceStart + 0.20 * $step) . "%";
@@ -55,12 +55,17 @@ if (!empty($jobTitles)) {
     $uniqueOpen = array_values(array_unique($openSteps));
 
     $keyframesTyping .= implode(", ", $uniqueOpen) . " { width: 0; }\n";
-    $keyframesTyping .= implode(", ", $uniqueCover) . " { width: calc(100% + 8px); }\n";
+    $keyframesTyping .= implode(", ", $uniqueCover) . " { width: 100%; }\n";
 }
 ?>
 
 <?php if (!empty($keyframesWords)): ?>
 <style>
+.text-animation span {
+    display: inline-block;
+    white-space: nowrap;
+    position: relative;
+}
 .text-animation span::before {
     animation: words <?php echo $animationDuration; ?>s infinite;
 }
@@ -78,8 +83,8 @@ if (!empty($jobTitles)) {
 
 <section class="accueil" id="accueil">
     <div class="accueil-content">
-      <h1>Hi, It's <span><?php echo htmlspecialchars($firstname ?? 'Emmanuel'); ?></span></h1>
-      <h3 class="text-animation">I'm a<span></span></h3>
+      <h1>Bienvenue,<br>je suis <span><?php echo htmlspecialchars($firstname ?? 'Emmanuel'); ?></span></h1>
+      <h3 class="text-animation">Spécialisé en<br><span></span></h3>
       <p><?php echo nl2br(htmlspecialchars($description)); ?></p>
 
       <div class="social-icons">

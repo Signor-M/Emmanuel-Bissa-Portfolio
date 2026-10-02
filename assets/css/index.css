@@ -108,14 +108,15 @@ header .logo {
 
 section {
   min-height: 100vh;
-  padding: 10rem 12% 10rem;
+  padding: 14rem 12% 6rem;
 }
 
 .accueil {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 15rem;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4rem;
 }
 
 .accueil-content {
@@ -124,7 +125,7 @@ section {
   align-items: baseline;
   text-align: left;
   justify-content: center;
-  margin-top: 3rem;
+  margin-top: 0;
 }
 
 span {
@@ -137,15 +138,16 @@ span {
 
 .accueil-content h3 {
   margin-bottom: 2rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 3.5rem;
+  line-height: 1.2;
 }
 
 .accueil-content h1 {
-  font-size: 7rem;
+  font-size: 6.5rem;
   font-weight: 700;
-  margin-top: 1.5rem;
-  line-height: 1;
+  margin-top: 1rem;
+  line-height: 1.1;
 }
 
 .accueil-img {
@@ -155,7 +157,7 @@ span {
 .accueil-img img {
   position: relative;
   background: var(--main-color);
-  top: 3rem;
+  top: 0;
   width: 32vw;
   border-radius: 50%;
   box-shadow: 0 0 25px var(--main-color);
@@ -185,7 +187,7 @@ span {
   font-size: 2.5rem;
   border-radius: 50%;
   color: var(--main-color);
-  margin: 3rem 1.5rem 3rem 0;
+  margin: 2.5rem 1.5rem 2.5rem 0;
   transition: 0.3s ease-in-out;
 }
 
@@ -243,10 +245,12 @@ span {
 
 .text-animation span {
   position: relative;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .text-animation span::before {
-  content: "Web Developer";
+  content: "Développeur Web";
   color: var(--main-color);
   animation: words 20s infinite;
 }
@@ -255,38 +259,42 @@ span {
   content: "";
   background-color: var(--bg-color);
   position: absolute;
-  width: calc(100% + 8px);
+  top: 0;
+  right: 0;
+  width: 100%;
   height: 100%;
-  border-left: 3px solid var(--bg-color);
-  right: -8px;
+  border-left: 3px solid var(--main-color);
   animation: cursor 0.6s infinite, typing 20s steps(14) infinite;
 }
 
 @keyframes cursor {
-  to {
-    border-left: 2px solid var(--main-color);
+  0%, 100% {
+    border-left-color: var(--main-color);
+  }
+  50% {
+    border-left-color: transparent;
   }
 }
 
 @keyframes words {
   0%,
   25% {
-    content: " Front-end Developer";
+    content: "Développeur Front-end";
   }
 
   26%,
   50% {
-    content: " Back-end Developer";
+    content: "Développeur Back-end";
   }
 
   51%,
   75% {
-    content: " Full Stack Developer";
+    content: "Développeur Full Stack";
   }
 
   76%,
   100% {
-    content: " Web Developer";
+    content: "Développeur Web";
   }
 }
 
@@ -304,6 +312,7 @@ span {
     width: 0;
   }
 
+  0%,
   5%,
   20%,
   25%,
@@ -312,8 +321,9 @@ span {
   60%,
   65%,
   80%,
-  85% {
-    width: calc(100% + 8px);
+  85%,
+  100% {
+    width: 100%;
   }
 }
 
@@ -424,19 +434,52 @@ span {
   margin-bottom: 5rem;
 }
 
-.skills-container {
-  max-width: 900px;
+.skills-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+.skill-category-card {
+  background: var(--second-bg-color);
+  padding: 3rem;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(0, 255, 238, 0.15);
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-normal);
+}
+
+.skill-category-card:hover {
+  border-color: var(--main-color);
+  box-shadow: var(--shadow-glow-sm);
+  transform: translateY(-4px);
+}
+
+.skill-category-title {
+  font-size: 2.2rem;
+  color: var(--main-color);
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  border-bottom: 2px solid rgba(0, 255, 238, 0.2);
+  padding-bottom: 1.2rem;
+}
+
+.skill-list {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
 .skill-item {
-  background: var(--second-bg-color);
-  padding: 2rem 2.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.8rem 2.2rem;
   border-radius: var(--radius-md);
-  border: 2px solid rgba(0, 255, 238, 0.15);
+  border: 1px solid rgba(0, 255, 238, 0.1);
   box-shadow: var(--shadow-card);
   transition: var(--transition-normal);
 }
@@ -444,7 +487,7 @@ span {
 .skill-item:hover {
   border-color: var(--main-color);
   box-shadow: var(--shadow-glow-sm);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .skill-meta {
@@ -683,11 +726,13 @@ span {
 
 .certificats-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-content: safe center;
   overflow-x: auto;
   gap: 20px;
-  padding: 20px;
+  padding: 20px 20px 30px 20px;
   scroll-behavior: smooth;
+  scroll-padding-left: 20px;
   max-width: 100%;
 }
 
@@ -970,9 +1015,9 @@ span {
     position: absolute;
     top: 100%;
     right: 0;
-    width: 50%;
+    width: 60%;
     padding: 1rem 5%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(20px);
     border-bottom-left-radius: 2rem;
     border-left: 2px solid var(--main-color);
@@ -987,7 +1032,7 @@ span {
   .navbar a {
     display: block;
     font-size: 2rem;
-    margin: 3rem 0;
+    margin: 2.5rem 0;
     margin-left: 0;
     text-align: center;
     color: white;
@@ -995,31 +1040,45 @@ span {
 
   section {
     min-height: auto;
-    padding: 12rem 5% 6rem;
+    padding: 10rem 5% 4rem;
   }
 
   .accueil {
     flex-direction: column-reverse;
-    gap: 3rem;
+    gap: 2.5rem;
   }
 
   .accueil-content {
     align-items: center;
     text-align: center;
-  }
-
-  .accueil-content h3 {
-    font-size: 2.6rem;
+    width: 100%;
   }
 
   .accueil-content h1 {
-    font-size: 5rem;
-    margin-top: 2rem;
+    font-size: clamp(2.8rem, 6.5vw, 4rem);
+    margin-top: 1rem;
     line-height: 1.2;
   }
 
+  .accueil-content h3 {
+    font-size: clamp(2rem, 4.8vw, 2.4rem);
+    min-height: 6.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .text-animation span {
+    font-size: clamp(1.7rem, 4.2vw, 2.2rem);
+  }
+
   .accueil-content p {
-    max-width: 600px;
+    max-width: 100%;
+    font-size: 1.4rem;
+    line-height: 1.6;
     margin: 0 auto;
   }
 
@@ -1030,7 +1089,7 @@ span {
   }
 
   .social-icons a {
-    margin: 2rem 1rem;
+    margin: 2rem 0.8rem;
   }
 
   .btn-group {
@@ -1038,12 +1097,13 @@ span {
   }
 
   .accueil-img img {
-    width: 56vw;
+    width: 50vw;
+    max-width: 220px;
     top: 0;
   }
 
   .heading {
-    font-size: 4.5rem;
+    font-size: 4rem;
     margin: 3rem 0;
   }
 
@@ -1055,13 +1115,33 @@ span {
     width: 100%;
   }
   .certificats-container {
+    justify-content: flex-start;
+    justify-content: safe center;
     gap: 1.5rem;
-    padding: 1rem;
+    padding: 1rem 1rem 2rem 1rem;
+    scroll-padding-left: 1rem;
   }
   .certificats-box {
     flex: 0 0 300px;
   }
   .certificats-box .img {
     height: 210px;
+  }
+}
+
+@media (max-width: 480px) {
+  .accueil-content h1 {
+    font-size: 2.8rem;
+  }
+  .accueil-content h3 {
+    font-size: 1.9rem;
+    min-height: 6rem;
+  }
+  .text-animation span {
+    font-size: 1.6rem;
+  }
+  .accueil-img img {
+    width: 55vw;
+    max-width: 190px;
   }
 }

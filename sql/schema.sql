@@ -90,21 +90,40 @@ CREATE TABLE IF NOT EXISTS web3forms(
     last_update DATE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS skill_categories(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    icon VARCHAR(255) DEFAULT 'bx bx-code-alt',
+    display_order INT DEFAULT 0
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS skills(
     id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NULL,
     name VARCHAR(255) NOT NULL,
     percentage INT NOT NULL DEFAULT 80,
     display_order INT DEFAULT 0,
-    last_update DATE
+    last_update DATE,
+    CONSTRAINT fk_skills_category_id
+        FOREIGN KEY (category_id) REFERENCES skill_categories(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO admin(lastname, firstname, email, password_hash) 
 VALUES ('Bissa', 'Emmanuel', 'emmanuelbissa0000@gmail.com','$2y$10$4gfOZ.swgKjsyS6ludlPcuuc9eqFctX1GRdQrMRLAIcafgv4yTHQ6');
 
-INSERT INTO skills (name, percentage, display_order, last_update) VALUES
-('HTML / CSS / BOOTSTRAP', 95, 1, NOW()),
-('REACT', 85, 2, NOW()),
-('PHP / MYSQL / SQLITE', 80, 3, NOW()),
-('GODOT (GD.SCRIPT)', 80, 4, NOW()),
-('GDEVELOP 5', 95, 5, NOW()),
-('NODE.JS', 85, 6, NOW());
+INSERT INTO skill_categories (id, name, icon, display_order) VALUES
+(1, 'Front-End', 'bx bx-layout', 1),
+(2, 'Back-End', 'bx bx-server', 2),
+(3, 'Base de données', 'bx bx-data', 3),
+(4, 'Software & Game Dev', 'bx bx-joystick', 4);
+
+INSERT INTO skills (category_id, name, percentage, display_order, last_update) VALUES
+(1, 'HTML / CSS / BOOTSTRAP', 95, 1, NOW()),
+(1, 'REACT', 85, 2, NOW()),
+(2, 'PHP', 80, 3, NOW()),
+(2, 'NODE.JS', 85, 4, NOW()),
+(3, 'MYSQL / SQLITE', 85, 5, NOW()),
+(4, 'GODOT (GD.SCRIPT)', 80, 6, NOW()),
+(4, 'GDEVELOP 5', 95, 7, NOW());
