@@ -1,8 +1,6 @@
 -- Migration: Creation of skill categories table with icons and mapping existing skills
 -- File: sql/migration_skill_categories.sql
 
-USE `portfolio`;
-
 -- 1. Create skill_categories table with icon column
 CREATE TABLE IF NOT EXISTS skill_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
