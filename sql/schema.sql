@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS informations(
     facebook_link VARCHAR(255),
     instagram_link VARCHAR(255),
     twitter_link VARCHAR(255),
+    tiktok_link VARCHAR(255),
+    youtube_link VARCHAR(255),
+    hire_link VARCHAR(255),
     last_update DATE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -11,6 +11,8 @@ $fGithub = $footerInfo['github_link'] ?? "";
 $fFacebook = $footerInfo['facebook_link'] ?? "";
 $fInstagram = $footerInfo['instagram_link'] ?? "";
 $fTwitter = $footerInfo['twitter_link'] ?? "";
+$fTiktok = $footerInfo['tiktok_link'] ?? "";
+$fYoutube = $footerInfo['youtube_link'] ?? "";
 ?>
 <footer class="footer">
     <div class="social">
@@ -29,6 +31,12 @@ $fTwitter = $footerInfo['twitter_link'] ?? "";
       <?php if (!empty($fTwitter)): ?>
         <a href="<?php echo htmlspecialchars($fTwitter); ?>" target="_blank" title="Twitter / X"><i class="bx bxl-twitter"></i></a>
       <?php endif; ?>
+      <?php if (!empty($fTiktok)): ?>
+        <a href="<?php echo htmlspecialchars($fTiktok); ?>" target="_blank" rel="noopener noreferrer" title="TikTok"><i class="bx bxl-tiktok"></i></a>
+      <?php endif; ?>
+      <?php if (!empty($fYoutube)): ?>
+        <a href="<?php echo htmlspecialchars($fYoutube); ?>" target="_blank" rel="noopener noreferrer" title="YouTube"><i class="bx bxl-youtube"></i></a>
+      <?php endif; ?>
     </div>
 
     <ul class="list">
@@ -39,14 +47,14 @@ $fTwitter = $footerInfo['twitter_link'] ?? "";
         <a href="#services">Services</a>
       </li>
       <li>
-        <a href="#accueil">About Me</a>
+        <a href="#accueil">À propos de moi</a>
       </li>
       <li>
-        <a href="#contact">Contact</a>
+        <a href="#contact">Me contacter</a>
       </li>
       <li>
         <a href="#certificats">Certificats</a>
       </li>
     </ul>
-    <p class="copyright">© <span id="year"><?php echo date('Y'); ?></span> <?php echo htmlspecialchars(($firstname ?? 'Emmanuel') . ' ' . ($lastname ?? 'Bissa')); ?> | All Rights Reserved</p>
+    <p class="copyright">© <span id="year"><?php echo date('Y'); ?></span> <?php echo htmlspecialchars(($firstname ?? 'Emmanuel') . ' ' . ($lastname ?? 'Bissa')); ?> | Tous droits réservés</p>
 </footer>

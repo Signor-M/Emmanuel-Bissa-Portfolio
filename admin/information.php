@@ -20,7 +20,10 @@ try {
             'github_link' => '',
             'facebook_link' => '',
             'instagram_link' => '',
-            'twitter_link' => ''
+            'twitter_link' => '',
+            'tiktok_link' => '',
+            'youtube_link' => '',
+            'hire_link' => null
         ];
     }
 } catch (Exception $e) {
@@ -36,6 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $facebook_link = security($_POST["facebook_link"] ?? "");
         $instagram_link = security($_POST["instagram_link"] ?? "");
         $twitter_link = security($_POST["twitter_link"] ?? "");
+        $tiktok_link = security($_POST["tiktok_link"] ?? "");
+        $youtube_link = security($_POST["youtube_link"] ?? "");
+        $cvLink = $info["hire_link"] ?? "";
 
         $profileImage = $info["profile_image"] ?? "";
 
@@ -46,15 +52,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 redirectTo("information.php");
             }
             if (!empty($uploadedName)) {
-                if (strpos($uploadedName, "__base64__") === 0) {
-                    $profileImage = str_replace("__base64__", "", $uploadedName);
-                } else if (strpos($uploadedName, "data:") === 0) {
-                    $profileImage = $uploadedName;
-                } else if (strpos($uploadedName, "__fallback__") === 0) {
-                    $profileImage = str_replace("__fallback__", "", $uploadedName);
-                } else {
-                    $profileImage = "assets/img/" . $uploadedName;
-                }
+                $profileImage = $uploadedName;
+            }
+        }
+
+        if (isset($_FILES["cv_file"]) && $_FILES["cv_file"]["error"] !== UPLOAD_ERR_NO_FILE) {
+            $uploadedCv = handleFileUpload($_FILES["cv_file"], null, ['pdf'], 'raw', 'cv');
+            if ($uploadedCv === false) {
+                redirectTo("information.php");
+            }
+            if (!empty($uploadedCv)) {
+                $cvLink = $uploadedCv;
             }
         }
 
@@ -63,7 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $sql = "UPDATE informations 
                     SET description = :desc, profile_image = :image, linkedin_link = :linkedin, 
                         github_link = :github, facebook_link = :facebook, instagram_link = :instagram, 
-                        twitter_link = :twitter, last_update = NOW()
+                        twitter_link = :twitter, tiktok_link = :tiktok, youtube_link = :youtube,
+                        hire_link = :hire, last_update = NOW()
                     WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -74,12 +83,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "facebook" => $facebook_link,
                 "instagram" => $instagram_link,
                 "twitter" => $twitter_link,
+                "tiktok" => $tiktok_link,
+                "youtube" => $youtube_link,
+                "hire" => $cvLink,
                 "id" => $info["id"]
             ]);
         } else {
             // INSERT
-            $sql = "INSERT INTO informations (description, profile_image, linkedin_link, github_link, facebook_link, instagram_link, twitter_link, last_update)
-                    VALUES (:desc, :image, :linkedin, :github, :facebook, :instagram, :twitter, NOW())";
+            $sql = "INSERT INTO informations (description, profile_image, linkedin_link, github_link, facebook_link, instagram_link, twitter_link, tiktok_link, youtube_link, hire_link, last_update)
+                    VALUES (:desc, :image, :linkedin, :github, :facebook, :instagram, :twitter, :tiktok, :youtube, :hire, NOW())";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 "desc" => $description,
@@ -88,7 +100,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 "github" => $github_link,
                 "facebook" => $facebook_link,
                 "instagram" => $instagram_link,
-                "twitter" => $twitter_link
+                "twitter" => $twitter_link,
+                "tiktok" => $tiktok_link,
+                "youtube" => $youtube_link,
+                "hire" => $cvLink
             ]);
         }
 
@@ -130,8 +145,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <input type="file" name="profile_image" id="profile_image" accept="image/*">
                 <?php if (!empty($info['profile_image'])): ?>
                     <div style="margin-top: 5px;">
-                        <?php $imgSrc = (strpos($info['profile_image'], 'data:') === 0) ? $info['profile_image'] : '../' . htmlspecialchars($info['profile_image']); ?>
-                        <img src="<?php echo $imgSrc; ?>" alt="Photo de profil" style="max-height: 100px; border-radius: 50%; border: 2px solid var(--main-color);">
+                        <?php
+                        $profileImagePath = $info['profile_image'];
+                        $imgSrc = preg_match('/^(https?:\/\/|data:)/i', $profileImagePath)
+                            ? $profileImagePath
+                            : '../' . $profileImagePath;
+                        ?>
+                        <img src="<?php echo htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8'); ?>" alt="Photo de profil" style="max-height: 100px; border-radius: 50%; border: 2px solid var(--main-color);">
                     </div>
                 <?php endif; ?>
             </div>
@@ -159,6 +179,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="form-group">
                 <label for="twitter_link">Lien Twitter / X :</label>
                 <input type="url" name="twitter_link" id="twitter_link" placeholder="https://twitter.com/..." value="<?php echo htmlspecialchars($info['twitter_link']); ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="tiktok_link">Lien TikTok :</label>
+                <input type="url" name="tiktok_link" id="tiktok_link" placeholder="https://www.tiktok.com/@..." value="<?php echo htmlspecialchars($info['tiktok_link'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="youtube_link">Lien YouTube :</label>
+                <input type="url" name="youtube_link" id="youtube_link" placeholder="https://www.youtube.com/@..." value="<?php echo htmlspecialchars($info['youtube_link'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="cv_file">CV (format PDF) :</label>
+                <input type="file" name="cv_file" id="cv_file" accept="application/pdf,.pdf">
+                <?php if (!empty($info['hire_link'])): ?>
+                    <p><a href="<?php echo htmlspecialchars($info['hire_link'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Voir le CV actuel</a></p>
+                <?php endif; ?>
             </div>
 
             <button type="submit" class="btn">Enregistrer les modifications</button>

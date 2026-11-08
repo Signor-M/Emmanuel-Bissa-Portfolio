@@ -50,15 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add"])) {
             redirectTo("certificates.php");
         }
 
-        if (strpos($uploadedName, "__base64__") === 0) {
-            $imagePath = str_replace("__base64__", "", $uploadedName);
-        } else if (strpos($uploadedName, "data:") === 0) {
-            $imagePath = $uploadedName;
-        } else if (strpos($uploadedName, "__fallback__") === 0) {
-            $imagePath = str_replace("__fallback__", "", $uploadedName);
-        } else {
-            $imagePath = "Certificats/" . $uploadedName;
-        }
+        $imagePath = $uploadedName;
 
         if (!empty($title) && !empty($imagePath)) {
             $sql = "INSERT INTO certificats (title, image_path, display_order, last_update) VALUES (:title, :image_path, :order, NOW())";
@@ -94,15 +86,7 @@ else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"]) && iss
                 redirectTo("certificates.php?action=edit&id=" . $id);
             }
             if (!empty($uploadedName)) {
-                if (strpos($uploadedName, "__base64__") === 0) {
-                    $imagePath = str_replace("__base64__", "", $uploadedName);
-                } else if (strpos($uploadedName, "data:") === 0) {
-                    $imagePath = $uploadedName;
-                } else if (strpos($uploadedName, "__fallback__") === 0) {
-                    $imagePath = str_replace("__fallback__", "", $uploadedName);
-                } else {
-                    $imagePath = "Certificats/" . $uploadedName;
-                }
+                $imagePath = $uploadedName;
             }
         }
 
@@ -193,8 +177,13 @@ try {
                 <input type="file" name="image_path" id="image_path" accept="image/*" <?php echo $isEditMode ? "" : "required"; ?>>
                 <?php if ($isEditMode && !empty($editCertificate['image_path'])): ?>
                     <div style="margin-top: 5px;">
-                        <?php $certImgSrc = (strpos($editCertificate['image_path'], 'data:') === 0) ? $editCertificate['image_path'] : '../' . htmlspecialchars($editCertificate['image_path']); ?>
-                        <img src="<?php echo $certImgSrc; ?>" alt="Aperçu" style="max-height: 80px; border-radius: 4px; border: 1px solid #333;">
+                        <?php
+                        $certificateImagePath = $editCertificate['image_path'];
+                        $certImgSrc = preg_match('/^(https?:\/\/|data:)/i', $certificateImagePath)
+                            ? $certificateImagePath
+                            : '../' . $certificateImagePath;
+                        ?>
+                        <img src="<?php echo htmlspecialchars($certImgSrc, ENT_QUOTES, 'UTF-8'); ?>" alt="Aperçu" style="max-height: 80px; border-radius: 4px; border: 1px solid #333;">
                     </div>
                 <?php endif; ?>
             </div>
@@ -227,8 +216,13 @@ try {
                     <?php foreach ($certificates as $certificate): ?>
                         <tr>
                             <td>
-                                <?php $tblImgSrc = (strpos($certificate["image_path"], 'data:') === 0) ? $certificate["image_path"] : '../' . htmlspecialchars($certificate["image_path"]); ?>
-                                <img src="<?php echo $tblImgSrc; ?>" alt="<?php echo htmlspecialchars($certificate["title"]); ?>" style="width: 50px; height: 35px; object-fit: cover; border-radius: 3px;">
+                                <?php
+                                $certificateImagePath = $certificate["image_path"];
+                                $tblImgSrc = preg_match('/^(https?:\/\/|data:)/i', $certificateImagePath)
+                                    ? $certificateImagePath
+                                    : '../' . $certificateImagePath;
+                                ?>
+                                <img src="<?php echo htmlspecialchars($tblImgSrc, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($certificate["title"]); ?>" style="width: 50px; height: 35px; object-fit: cover; border-radius: 3px;">
                             </td>
                             <td><?php echo htmlspecialchars($certificate["title"]); ?></td>
                             <td><?php echo htmlspecialchars($certificate["display_order"]); ?></td>

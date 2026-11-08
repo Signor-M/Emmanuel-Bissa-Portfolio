@@ -23,6 +23,9 @@ $github = $infoData['github_link'] ?? "";
 $facebook = $infoData['facebook_link'] ?? "";
 $instagram = $infoData['instagram_link'] ?? "";
 $twitter = $infoData['twitter_link'] ?? "";
+$tiktok = $infoData['tiktok_link'] ?? "";
+$youtube = $infoData['youtube_link'] ?? "";
+$cvLink = $infoData['hire_link'] ?? "";
 
 // Génération dynamique des mots clés d'animation si présents en BDD
 $keyframesWords = "";
@@ -103,11 +106,19 @@ if (!empty($jobTitles)) {
         <?php if (!empty($twitter)): ?>
           <a href="<?php echo htmlspecialchars($twitter); ?>" target="_blank" title="Twitter / X"><i class="bx bxl-twitter"></i></a>
         <?php endif; ?>
+        <?php if (!empty($tiktok)): ?>
+          <a href="<?php echo htmlspecialchars($tiktok); ?>" target="_blank" rel="noopener noreferrer" title="TikTok"><i class="bx bxl-tiktok"></i></a>
+        <?php endif; ?>
+        <?php if (!empty($youtube)): ?>
+          <a href="<?php echo htmlspecialchars($youtube); ?>" target="_blank" rel="noopener noreferrer" title="YouTube"><i class="bx bxl-youtube"></i></a>
+        <?php endif; ?>
       </div>
 
       <div class="btn-group">
-        <a class="btn" href="#contact">Hire</a>
-        <a class="btn" href="#contact">Contact</a>
+        <?php if (!empty($cvLink)): ?>
+          <a class="btn" href="<?php echo htmlspecialchars($cvLink, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" download>Télécharger mon CV</a>
+        <?php endif; ?>
+        <a class="btn" href="#contact">Me contacter</a>
       </div>
     </div>
 

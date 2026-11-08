@@ -7,23 +7,23 @@ try {
 }
 ?>
 <section class="contact" id="contact">
-    <h2 class="heading">Contact <span>Me</span></h2>
+    <h2 class="heading">Me contacter</h2>
 
     <form action="https://api.web3forms.com/submit" method="POST">
       <div class="input-group">
         <input type="hidden" name="access_key" value="<?php echo htmlspecialchars($web3Key); ?>" />
         <div class="input-box">
-          <input type="text" name="name" placeholder="Full Name" required />
-          <input type="email" name="email" placeholder="Email" required />
+          <input type="text" name="name" placeholder="Nom complet" required />
+          <input type="email" name="email" placeholder="Adresse e-mail" required />
         </div>
         <div class="input-box">
-          <input type="number" name="number" placeholder="Phone Number" required />
+          <input type="tel" name="number" placeholder="Numéro de téléphone" required />
         </div>
       </div>
 
       <div class="input-group-2">
-        <textarea name="message" cols="30" rows="10" placeholder="Your Message" required></textarea>
-        <input type="submit" value="Send Message" class="btn" />
+        <textarea name="message" cols="30" rows="10" placeholder="Votre message" required></textarea>
+        <input type="submit" value="Envoyer le message" class="btn" />
       </div>
     </form>
 </section>

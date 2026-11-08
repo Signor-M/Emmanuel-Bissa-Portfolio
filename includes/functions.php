@@ -35,21 +35,15 @@ function displayAlerts() {
 }
 
 /**
- * S'assure qu'un dossier et ses parents existent et applique 0777 en PHP.
+ * Envoie une image vers Cloudinary et retourne son URL publique HTTPS.
  */
-function ensureUploadDir($targetDir) {
-    if (!is_dir($targetDir)) {
-        @mkdir($targetDir, 0777, true);
-    }
-    @chmod($targetDir, 0777);
-    @chmod(dirname($targetDir), 0777);
-}
-
-/**
- * Gère l'upload d'un fichier et l'encode directement en Base64 Data URI.
- * Cela garantit que les images sont conservées en base de données même sur un hébergement à système de fichiers éphémère.
- */
-function handleFileUpload($fileArray, $targetDir = null, $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']) {
+function handleFileUpload(
+    $fileArray,
+    $targetDir = null,
+    $allowedExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'],
+    $resourceType = 'image',
+    $folderName = 'images'
+) {
     if (!isset($fileArray) || !isset($fileArray['error']) || $fileArray['error'] === UPLOAD_ERR_NO_FILE) {
         return null; // Aucun fichier fourni
     }
@@ -81,24 +75,65 @@ function handleFileUpload($fileArray, $targetDir = null, $allowedExts = ['jpg', 
         return false;
     }
 
-    // Encodage direct en Base64 Data URI
     $tmpPath = $fileArray['tmp_name'];
-    if (file_exists($tmpPath)) {
-        $imageData = @file_get_contents($tmpPath);
-        if ($imageData !== false) {
-            $mimeType = 'image/' . ($fileExt === 'jpg' ? 'jpeg' : $fileExt);
-            if (function_exists('mime_content_type')) {
-                $detectedMime = @mime_content_type($tmpPath);
-                if (!empty($detectedMime)) {
-                    $mimeType = $detectedMime;
-                }
-            }
-            $base64 = 'data:' . $mimeType . ';base64,' . base64_encode($imageData);
-            return "__base64__" . $base64;
-        }
+    if (!is_uploaded_file($tmpPath) && !file_exists($tmpPath)) {
+        $_SESSION['error'] = "Le fichier image téléchargé est introuvable.";
+        return false;
     }
 
-    $_SESSION['error'] = "Impossible de lire le fichier image téléchargé.";
-    return false;
+    $cloudName = getenv('CLOUDINARY_CLOUD_NAME') ?: '';
+    $apiKey = getenv('CLOUDINARY_API_KEY') ?: '';
+    $apiSecret = getenv('CLOUDINARY_API_SECRET') ?: '';
+
+    if ($cloudName === '' || $apiKey === '' || $apiSecret === '') {
+        $_SESSION['error'] = "Le stockage d'images Cloudinary n'est pas configuré sur le serveur.";
+        return false;
+    }
+
+    if (!function_exists('curl_init')) {
+        $_SESSION['error'] = "L'extension PHP cURL est nécessaire pour envoyer les images.";
+        return false;
+    }
+
+    $timestamp = time();
+    $appEnvironment = strtolower(trim(getenv('APP_ENV') ?: 'local'));
+    $folderEnvironment = in_array($appEnvironment, ['production', 'prod'], true)
+        ? 'production'
+        : 'local';
+    $folder = 'emmanuel-bissa-portfolio/uploads/' . $folderEnvironment . '/' . $folderName;
+    $signature = sha1("folder={$folder}&timestamp={$timestamp}{$apiSecret}");
+    $curl = curl_init("https://api.cloudinary.com/v1_1/" . rawurlencode($cloudName) . '/' . $resourceType . '/upload');
+
+    curl_setopt_array($curl, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_POSTFIELDS => [
+            'file' => new CURLFile($tmpPath, $fileArray['type'] ?? 'application/octet-stream', $fileName),
+            'api_key' => $apiKey,
+            'timestamp' => $timestamp,
+            'folder' => $folder,
+            'signature' => $signature,
+        ],
+    ]);
+
+    $response = curl_exec($curl);
+    $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($curl);
+    curl_close($curl);
+
+    if ($response === false || $curlError !== '') {
+        $_SESSION['error'] = "Impossible de contacter Cloudinary : " . $curlError;
+        return false;
+    }
+
+    $result = json_decode($response, true);
+    if ($statusCode < 200 || $statusCode >= 300 || empty($result['secure_url'])) {
+        $cloudinaryError = $result['error']['message'] ?? "réponse invalide";
+        $_SESSION['error'] = "Cloudinary a refusé l'image : " . $cloudinaryError;
+        return false;
+    }
+
+    return $result['secure_url'];
 }
 ?>
